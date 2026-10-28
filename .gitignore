@@ -1,8 +1,8 @@
 __pycache__/
 *.pyc
 *.pyo
-.venv/
-venv/
 *.egg-info/
 .env
+.venv/
+venv/
 ci_reports/
