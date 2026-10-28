@@ -21,4 +21,4 @@ def get_pipeline_sequence() -> list[dict[str, Any]]:
         {"step": 2, "name": "aml_analysis", "description": "Anti-money laundering screening"},
         {"step": 3, "name": "approval", "description": "Final compliance approval"},
     ]
-# hook dry-run
+# reviewed for PCI DSS

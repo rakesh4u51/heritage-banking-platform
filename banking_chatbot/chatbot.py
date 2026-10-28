@@ -65,14 +65,17 @@ def write_audit_log_entry(event: dict) -> None:
 
 
 def run_with_guardrails(user_message: str, session_id: str) -> str:
-    """Chain rate_limit_check → call_claude → pre_response_pii_filter → write_audit_log_entry."""
+    """Chain: rate_limit → sanitize input → call_claude → PII filter output → audit log."""
     rate_limit_check(session_id, user_message)
-    raw = call_claude(user_message)
+    # Sanitize input before transmitting to external LLM (PCI DSS Req 3 & 4)
+    safe_input = pre_response_pii_filter(user_message)
+    raw = call_claude(safe_input)
     filtered = pre_response_pii_filter(raw)
     write_audit_log_entry({
         "session_id": session_id,
         "financial_query": is_financial_query(user_message),
         "response_length": len(filtered),
+        "input_sanitized": True,
     })
     return filtered
 
@@ -92,10 +95,15 @@ def call_claude(user_message: str, tools: list[dict[str, Any]] | None = None) ->
     return ""
 
 
-def handle_message(user_message: str) -> str:
-    """Basic chatbot handler — guardrails added in Module 6 Project 3."""
-    return call_claude(user_message)
+def handle_message(user_message: str, session_id: str) -> str:
+    """Route every message through PCI DSS guardrails (rate limit, PII filter, audit log).
+
+    session_id must be supplied by caller — no default to prevent shared rate-limit counters
+    across unauthenticated users (PCI DSS Req 8).
+    """
+    return run_with_guardrails(user_message, session_id)
 
 
 if __name__ == "__main__":
-    print(handle_message("What services does Heritage National Bank offer?"))
+    # Demonstrate guardrail chain: rate limit → sanitize input → LLM → PII filter → audit log
+    print(handle_message("What services does Heritage National Bank offer?", session_id="demo"))
