@@ -1,0 +1,1 @@
+{"timestamp": "2026-10-28T15:25:10.271279Z", "hook_event": "PreToolUse", "session_id": "dryrun", "tool_name": "mcp__github__list_issues", "tool_input": {"note": "card [REDACTED-PCI]"}, "is_mcp_tool": true, "schema_version": "1.0"}
