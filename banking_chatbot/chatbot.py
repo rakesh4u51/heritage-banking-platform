@@ -92,10 +92,11 @@ def call_claude(user_message: str, tools: list[dict[str, Any]] | None = None) ->
     return ""
 
 
-def handle_message(user_message: str) -> str:
-    """Basic chatbot handler — guardrails added in Module 6 Project 3."""
-    return call_claude(user_message)
+def handle_message(user_message: str, session_id: str = "default") -> str:
+    """Route every message through PCI DSS guardrails (rate limit, PII filter, audit log)."""
+    return run_with_guardrails(user_message, session_id)
 
 
 if __name__ == "__main__":
-    print(handle_message("What services does Heritage National Bank offer?"))
+    # Demonstrate guardrail chain: rate limit → LLM → PII filter → audit log
+    print(handle_message("What services does Heritage National Bank offer?", session_id="demo"))
